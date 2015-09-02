@@ -123,7 +123,9 @@
         (aset r i (unchecked-byte (bit-or x y)))))
     (value-buffer r)))
 
-(defn get-int [buf pos]
+(defn get-int
+  "get the int starting at byte pos"
+  [buf pos]
   (let [a (bit-and (get-byte buf pos) 0xff)
         b (bit-and (get-byte buf (+ 1 pos)) 0xff)
         c (bit-and (get-byte buf (+ 2 pos)) 0xff)
@@ -133,7 +135,9 @@
             (bit-shift-left c (* 1 8))
             (bit-shift-left d (* 0 8)))))
 
-(defn get-long [buf pos]
+(defn get-long
+  "get the long starting at byte pos"
+  [buf pos]
   (let [a (bit-and (get-int buf pos)
                    (unchecked-int 0xffffffff))
         b (bit-and (get-int buf (+ 4 pos))
@@ -141,7 +145,9 @@
     (bit-or (bit-shift-left a (* 4 8))
             (bit-shift-left b (* 0 8)))))
 
-(defn leading-zeros [buf]
+(defn leading-zeros
+  "counts the leading zeroes"
+  [buf]
   (loop [n 0
          i (dec (count buf))
          a 7]
@@ -154,7 +160,9 @@
             (recur (inc n) i (dec a))
             n))))))
 
-(defn test-bit [buf i]
+(defn test-bit
+  "returns true if bit i in the buffer is 1, false otherwise"
+  [buf i]
   (if (> i (count buf))
     false
     (let [ii (quot i 8)
@@ -162,7 +170,9 @@
           b (get-byte buf ii)]
       (not (zero? (bit-and (bit-shift-left b iii) 1))))))
 
-(defn from-byte-buffer [bb]
+(defn from-byte-buffer
+  "create a value buffer from the remaining bytes in the byte buffer"
+  [bb]
   (let [b (byte-array (.remaining bb))]
     (.get bb b)
     (value-buffer b)))
@@ -185,5 +195,3 @@
     (doseq [b bufs]
       (.put buf (.-b b)))
     (value-buffer (.array buf))))
-
-
